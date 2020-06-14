@@ -1,0 +1,37 @@
+{
+    "manifestVersion": 1,
+    "id": "ignite-build-extension",
+    "publisher": "HenningKrause",
+    "version": "1.0.0",
+    "name": "Ignite",
+    "description": "Executes setup bundles created with Burn and uploads the build logs.",
+    "public": false,
+    "categories": ["Azure Pipelines"],
+    "icons": {
+        "default": "images/fire.png"        
+    },
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "files": [
+        {
+            "path": "dist",
+            "addressable": true,
+            "packagePath": "igniteTask"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "ignite-task",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "igniteTask"
+            }
+        }
+    ]
+}
