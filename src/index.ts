@@ -1,11 +1,9 @@
-import tl = require('azure-pipelines-task-lib/task');
+import * as tl from 'azure-pipelines-task-lib/task';
 import { v4 as uuidv4 } from 'uuid';
-import * as net from "net"
-import * as process from 'process'
+import * as net from "net";
+import * as process from 'process';
 import { ToolRunner } from 'azure-pipelines-task-lib/toolrunner';
 import * as path from 'path';
-import { debuglog } from 'util';
-import { exit } from 'process';
 
 enum MessageType {
     None = 0,
@@ -15,7 +13,7 @@ enum MessageType {
 }
 
 function WriteStringToPipe(value: string, socket: net.Socket) {
-    var buffer = stringToByteArray(value);
+    const buffer = stringToByteArray(value);
     WriteNumberToPipe(buffer.length, socket);
     socket.write(buffer);
 }
@@ -33,9 +31,9 @@ function stringToByteArray(value: string): Buffer {
 }
 
 function completeMessage(socket: net.Socket) {
-    WriteNumberToPipe(0xF0000002, socket)
-    WriteNumberToPipe(4, socket)
-    WriteNumberToPipe(0, socket)
+    WriteNumberToPipe(0xF0000002, socket);
+    WriteNumberToPipe(4, socket);
+    WriteNumberToPipe(0, socket);
 }
 
 function numberToBytesArray (num: number): Uint8Array {
@@ -52,19 +50,19 @@ function processProgressMessage(buffer: Buffer): number {
 function processErrorMessage(buffer: Buffer) {
     const length = buffer.readInt32LE();
     const errorMessage = buffer.toString("utf16le", 4, (length*2)+4);
-    tl.error(errorMessage)
+    tl.error(errorMessage);
 }
 
 async function executeBundle(bundlePath: string, commandLineParameters: string|undefined, logFile: string): Promise<number> {
     const pipeSecret = uuidv4().toString();
-    var pipeName = `bpe_${process.pid}`;
-    var pipePath = `\\\\.\\pipe\\${pipeName}`;
+    const pipeName = `bpe_${process.pid}`;
+    const pipePath = `\\\\.\\pipe\\${pipeName}`;
 
-    tl.debug("starting listener")
-    var server = net.createServer();
+    tl.debug("starting listener");
+    const server = net.createServer();
 
     server.on("connection", socket => {
-        console.log("Sending secret through pipeline")
+        console.log("Sending secret through pipeline");
         WriteStringToPipe(pipeSecret, socket);
         WriteNumberToPipe(process.pid, socket);
         
@@ -82,13 +80,14 @@ async function executeBundle(bundlePath: string, commandLineParameters: string|u
                     processErrorMessage(buffer);
                     break;
                 }
-                case MessageType.Progress: 
+                case MessageType.Progress: {
                     const progress = processProgressMessage(buffer);
                     if (progress !== lastProgress) {
                         tl.setProgress(progress, "Installing bundle");
                         lastProgress = progress;
                     }
                     break;
+                }
             }
             
             completeMessage(socket);   
@@ -97,15 +96,15 @@ async function executeBundle(bundlePath: string, commandLineParameters: string|u
     });
     server.listen(pipePath);
 
-    let bundleTool: ToolRunner = tl.tool(bundlePath);
-    bundleTool.argIf(commandLineParameters, commandLineParameters)
-    bundleTool.arg("-passive")
-    bundleTool.arg("-log")
-    bundleTool.arg(logFile)
+    const bundleTool: ToolRunner = tl.tool(bundlePath);
+    bundleTool.argIf(commandLineParameters, commandLineParameters);
+    bundleTool.arg("-quiet");
+    bundleTool.arg("-log");
+    bundleTool.arg(logFile);
     bundleTool.arg("-burn.embedded");
     bundleTool.arg(pipeName);
-    bundleTool.arg(pipeSecret)
-    bundleTool.arg(process.pid.toString())
+    bundleTool.arg(pipeSecret);
+    bundleTool.arg(process.pid.toString());
 
 
     try {
@@ -116,26 +115,25 @@ async function executeBundle(bundlePath: string, commandLineParameters: string|u
     }
 }
 
-function attachLogs(path: string) {
-    tl.debug(`Finding logs in ${path}`)
-    const files = tl.findMatch(path, "*.log");
+function attachLogs(filePath: string) {
+    tl.debug(`Finding logs in ${filePath}`);
+    const files = tl.findMatch(filePath, "*.log");
     files.forEach(element => {
-        tl.uploadFile(element)
-        tl.uploadBuildLog
+        tl.uploadFile(element);
     });
 }
 
 async function run() {
     try {
         const bundlePath = tl.getInput('bundlePath', true);
-        const commandLineParameters: string | undefined = tl.getInput("commandLineParameters")
+        const commandLineParameters: string | undefined = tl.getInput("commandLineParameters");
         const alwaysAttachLogFiles = tl.getBoolInput("alwaysAttachLogfiles", false);
-        if (!bundlePath) throw new Error("Parameter bundlePath not set.")
+        if (!bundlePath) throw new Error("Parameter bundlePath not set.");
 
         const tempPath =  tl.getVariable("Agent.TempDirectory");
-        if (!tempPath) throw new Error("Agent.TempDirectory not set.")
+        if (!tempPath) throw new Error("Agent.TempDirectory not set.");
         const logFile = path.join(tempPath, uuidv4(), path.basename(bundlePath, path.extname(bundlePath)) + ".log");
-        tl.debug(`Log file is ${logFile}`)
+        tl.debug(`Log file is ${logFile}`);
 
         const exitCode = await executeBundle(bundlePath, commandLineParameters, logFile);
         tl.debug(`Exit code is ${exitCode}`);
@@ -150,10 +148,16 @@ async function run() {
         
         tl.setResult(tl.TaskResult.Failed, `Bundle failed with error ${exitCode}`, true);
     }
-    catch (err) {
-        tl.debug("Exception.")
-        tl.setResult(tl.TaskResult.Failed, err.message);
+    catch (error) {
+        if (error instanceof Error) {
+            tl.setResult(tl.TaskResult.Failed, error.message);
+        }
+        else  {
+           // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+           tl.setResult(tl.TaskResult.Failed, `Task failed unexpectedly. (${error})`);
+        }
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 run();

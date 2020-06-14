@@ -1,0 +1,7 @@
+dist
+node_modules
+nyc.config.js
+.mocharc.js
+ts-hook.js
+build.js
+webpack*.js
