@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "ignite-build-extension",
     "publisher": "HenningKrause",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "name": "Ignite",
     "description": "Executes setup bundles created with Burn and uploads the build logs.",
     "public": false,
