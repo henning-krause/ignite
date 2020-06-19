@@ -14,8 +14,7 @@ module.exports = {
         symlinks: false,
     },
     optimization: {
-        minimize: true,
-        minimizer: [new TerserPlugin()],
+        minimize: false,
     },
     output: {
         filename: "index.js",
@@ -30,8 +29,7 @@ module.exports = {
         new CopyPlugin({
           patterns: [
             { from: 'src/task.json', to: '.', flatten: true},
-            { from: 'images/fire.png', to: './icon.png', toType: 'file' },
-            { from: 'images/fire.svg', to: './icon.svg', toType: 'file' }
+            { from: 'images/fire.png', to: './icon.png', toType: 'file' }
           ],
         }),
       ]

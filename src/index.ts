@@ -97,7 +97,10 @@ async function executeBundle(bundlePath: string, commandLineParameters: string|u
     server.listen(pipePath);
 
     const bundleTool: ToolRunner = tl.tool(bundlePath);
-    bundleTool.argIf(commandLineParameters, commandLineParameters);
+    if (commandLineParameters) {
+        tl.debug(`Additional Command line parameters: ${commandLineParameters}`);
+        bundleTool.line(commandLineParameters);
+    }
     bundleTool.arg("-quiet");
     bundleTool.arg("-log");
     bundleTool.arg(logFile);
@@ -134,7 +137,6 @@ async function run() {
         if (!tempPath) throw new Error("Agent.TempDirectory not set.");
         const logFile = path.join(tempPath, uuidv4(), path.basename(bundlePath, path.extname(bundlePath)) + ".log");
         tl.debug(`Log file is ${logFile}`);
-
         const exitCode = await executeBundle(bundlePath, commandLineParameters, logFile);
         tl.debug(`Exit code is ${exitCode}`);
 
