@@ -9,7 +9,7 @@
     "author": "Henning krause",
     "version": {
         "Major": 0,
-        "Minor": 3,
+        "Minor": 5,
         "Patch": 0
     },
     "instanceNameFormat": "Ignite $(bundlePath)",

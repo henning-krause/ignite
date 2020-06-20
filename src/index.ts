@@ -9,7 +9,6 @@ enum MessageType {
     None = 0,
     Error = 1,
     Progress = 2,
-    
 }
 
 function WriteStringToPipe(value: string, socket: net.Socket) {
@@ -62,7 +61,7 @@ async function executeBundle(bundlePath: string, commandLineParameters: string|u
     const server = net.createServer();
 
     server.on("connection", socket => {
-        console.log("Sending secret through pipeline");
+        tl.debug("Sending secret through pipeline");
         WriteStringToPipe(pipeSecret, socket);
         WriteNumberToPipe(process.pid, socket);
         
@@ -130,8 +129,10 @@ async function run() {
     try {
         const bundlePath = tl.getInput('bundlePath', true);
         const commandLineParameters: string | undefined = tl.getInput("commandLineParameters");
-        const alwaysAttachLogFiles = tl.getBoolInput("alwaysAttachLogfiles", false);
+        const alwaysAttachLogFiles = tl.getBoolInput("alwaysAttachLogs", false);
         if (!bundlePath) throw new Error("Parameter bundlePath not set.");
+
+        if (!tl.exist(bundlePath)) throw new Error(`The file ${bundlePath} was not found.`);
 
         const tempPath =  tl.getVariable("Agent.TempDirectory");
         if (!tempPath) throw new Error("Agent.TempDirectory not set.");
