@@ -2,17 +2,17 @@
     "manifestVersion": 1,
     "id": "ignite-build-extension",
     "publisher": "HenningKrause",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "name": "Ignite",
     "description": "Executes setup bundles created with Burn and uploads the build logs.",
-    "public": false,
+    "public": true,
     "categories": ["Azure Pipelines"],
     "icons": {
         "default": "images/fire.png"        
     },
     "targets": [
         {
-            "id": "Microsoft.VisualStudio.Services"
+            "id": "Microsoft.VisualStudio.Services.Integration"
         }
     ],    
     "files": [
