@@ -2,6 +2,8 @@
 
 This repo contains an Azure Devops build task that executes an installer based on [Burn](https://wixtoolset.org/documentation/manual/v3/bundle/). It reports the bundles progress to azure Azure Devops and collects logs which are then added are attached to the build. This task can be added to build and release pipelines.
 
+See [Details](Details.md) for infos on how to use this task.
+
 ## Build and package
 
 Run

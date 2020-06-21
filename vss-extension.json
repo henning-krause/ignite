@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "ignite-build-extension",
     "publisher": "HenningKrause",
-    "version": "1.0.11",
+    "version": "1.0.14",
     "name": "Ignite",
     "description": "Executes setup bundles created with Burn and uploads the build logs.",
     "public": true,
@@ -10,18 +10,54 @@
     "icons": {
         "default": "images/fire.png"        
     },
+    "tags": [
+        "release",
+        "build",
+        "wix",
+        "wixtoolkit",
+        "burn",
+        "bundle",
+        "setup",
+        "install",
+        "bootstrap",
+        "bootstrapper"
+    ],
+    "links": {
+        "getstarted": {
+            "uri": "https://github.com/henning-krause/ignite"
+        },
+        "support": {
+            "uri": "https://github.com/henning-krause/ignite/issues"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/henning-krause/ignite"
+    },
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services.Integration"
         }
-    ],    
+    ],
+    "screenshots": [
+        { "path": "screenshots/configuration.png" }
+    ],
     "files": [
         {
             "path": "dist",
             "addressable": true,
             "packagePath": "igniteTask"
+        },
+        {
+            "path": "screenshots",
+            "addressable": true
         }
     ],
+    "content": {
+        "details": {
+            "path": "readme.md"
+        }
+    },
     "contributions": [
         {
             "id": "ignite-task",
