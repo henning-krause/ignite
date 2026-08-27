@@ -42,13 +42,16 @@ function numberToBytesArray (num: number): Uint8Array {
     return new Uint8Array(arr);
 }
 
+// Payloads start at offset 8, after the 4-byte message id and 4-byte size.
 function processProgressMessage(buffer: Buffer): number {
-    return buffer.readInt32LE(8);
+    // Offset 8 is the per-phase percentage, which Burn usually reports as zero.
+    return buffer.readInt32LE(12);
 }
 
 function processErrorMessage(buffer: Buffer) {
-    const length = buffer.readInt32LE();
-    const errorMessage = buffer.toString("utf16le", 4, (length*2)+4);
+    // Offset 8 holds the error code, followed by the message character count.
+    const length = buffer.readInt32LE(12);
+    const errorMessage = buffer.toString("utf16le", 16, 16 + (length * 2));
     tl.error(errorMessage);
 }
 

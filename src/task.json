@@ -9,10 +9,11 @@
     "author": "Henning krause",
     "version": {
         "Major": 0,
-        "Minor": 5,
+        "Minor": 6,
         "Patch": 0
     },
     "instanceNameFormat": "Ignite $(bundlePath)",
+    "minimumAgentVersion": "4.248.0",
     "inputs": [
         {
             "name": "bundlePath",
@@ -40,7 +41,10 @@
         }
     ],
     "execution": {
-        "Node10": {
+        "Node20_1": {
+            "target": "index.js"
+        },
+        "Node24": {
             "target": "index.js"
         }
     }
